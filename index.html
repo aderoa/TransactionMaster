@@ -622,6 +622,7 @@
     <header>
       <h1>🏀 NBA Trade Calculator</h1>
       <div class="header-actions">
+        <button class="btn btn-secondary" id="randomTradeBtn">🎲 Random Trade</button>
         <button class="btn btn-danger" id="resetBtn">Reset Trade</button>
       </div>
     </header>
@@ -1164,6 +1165,108 @@
         });
       });
     }
+
+    // Generate a random valid trade
+    function generateRandomTrade() {
+      const MIN_COMBINED_SALARY = 10000000; // $10M minimum
+      const MAX_ATTEMPTS = 100;
+      
+      // Get tradeable players (exclude two-way, must have team)
+      const tradeablePlayers = players.filter(p => 
+        p.team && 
+        p.contractStatus?.toUpperCase() !== 'TWO-WAY' &&
+        p.tradeAvailable?.toLowerCase() !== 'not available' &&
+        p.salary >= 1000000 // At least $1M salary
+      );
+      
+      for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+        // Pick a random player to start
+        const player1 = tradeablePlayers[Math.floor(Math.random() * tradeablePlayers.length)];
+        const team1Info = getTeamInfo(player1.team);
+        
+        // Find potential trade partners from other teams
+        const otherTeamPlayers = tradeablePlayers.filter(p => p.team !== player1.team);
+        
+        // Shuffle and try to find a valid match
+        const shuffled = [...otherTeamPlayers].sort(() => Math.random() - 0.5);
+        
+        for (const player2 of shuffled) {
+          const team2Info = getTeamInfo(player2.team);
+          
+          // Check minimum combined salary
+          if (player1.salary + player2.salary < MIN_COMBINED_SALARY) continue;
+          
+          // Create test trade
+          const testTrade = [
+            { 
+              teamName: player1.team, 
+              playersOut: [{ ...player1, destination: 1 }], 
+              playersIn: [player2] 
+            },
+            { 
+              teamName: player2.team, 
+              playersOut: [{ ...player2, destination: 0 }], 
+              playersIn: [player1] 
+            }
+          ];
+          
+          // Validate both sides
+          const team1Valid = validateTeamTrade(testTrade[0]);
+          const team2Valid = validateTeamTrade(testTrade[1]);
+          
+          if (team1Valid.valid && team2Valid.valid) {
+            // Maybe add a third player (50% chance)
+            if (Math.random() > 0.5) {
+              // Try to add another player to one side
+              const sideToAdd = Math.random() > 0.5 ? 0 : 1;
+              const teamToAddFrom = testTrade[sideToAdd].teamName;
+              const additionalPlayers = tradeablePlayers.filter(p => 
+                p.team === teamToAddFrom && 
+                p.player !== testTrade[sideToAdd].playersOut[0].player &&
+                p.salary < 15000000 // Keep additional player smaller
+              );
+              
+              if (additionalPlayers.length > 0) {
+                const additionalPlayer = additionalPlayers[Math.floor(Math.random() * additionalPlayers.length)];
+                const otherSide = sideToAdd === 0 ? 1 : 0;
+                
+                // Add player and test
+                testTrade[sideToAdd].playersOut.push({ ...additionalPlayer, destination: otherSide });
+                testTrade[otherSide].playersIn.push(additionalPlayer);
+                
+                // Re-validate
+                const retest1 = validateTeamTrade(testTrade[0]);
+                const retest2 = validateTeamTrade(testTrade[1]);
+                
+                if (!retest1.valid || !retest2.valid) {
+                  // Remove the additional player if it breaks the trade
+                  testTrade[sideToAdd].playersOut.pop();
+                  testTrade[otherSide].playersIn.pop();
+                }
+              }
+            }
+            
+            // Found a valid trade!
+            return testTrade;
+          }
+        }
+      }
+      
+      return null; // No valid trade found
+    }
+    
+    // Handle random trade button
+    const randomTradeBtn = document.getElementById('randomTradeBtn');
+    randomTradeBtn.addEventListener('click', () => {
+      const randomTrade = generateRandomTrade();
+      
+      if (randomTrade) {
+        tradeTeams = randomTrade;
+        render();
+      } else {
+        alert('Could not generate a valid random trade. Try again!');
+      }
+    });
 
     // Reset trade
     resetBtn.addEventListener('click', () => {
