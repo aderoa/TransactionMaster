@@ -18,8 +18,11 @@
       --accent: #3b82f6;
       --accent-dim: rgba(59, 130, 246, 0.15);
       --green: #34c759;
+      --green-dim: rgba(52, 199, 89, 0.15);
       --orange: #ff9f0a;
+      --orange-dim: rgba(255, 159, 10, 0.15);
       --red: #ff453a;
+      --red-dim: rgba(255, 69, 58, 0.15);
     }
 
     * {
@@ -37,307 +40,435 @@
     }
 
     .container {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 3rem 1.5rem;
+      padding: 2rem 1.5rem;
     }
 
     header {
-      margin-bottom: 3rem;
+      margin-bottom: 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
     }
 
     h1 {
-      font-size: 2rem;
+      font-size: 1.75rem;
       font-weight: 700;
       letter-spacing: -0.03em;
-      margin-bottom: 0.5rem;
     }
 
-    .subtitle {
-      color: var(--text-secondary);
-      font-size: 1rem;
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
     }
 
-    .search-section {
-      margin-bottom: 2.5rem;
-    }
-
-    .search-container {
-      position: relative;
-      max-width: 480px;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: 1rem 1.25rem;
-      font-size: 1rem;
+    .btn {
+      padding: 0.625rem 1.25rem;
+      font-size: 0.875rem;
       font-family: inherit;
+      font-weight: 500;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #2563eb;
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-hover);
+    }
+
+    .btn-danger {
+      background: var(--red-dim);
+      color: var(--red);
+      border: 1px solid transparent;
+    }
+
+    .btn-danger:hover {
+      background: var(--red);
+      color: white;
+    }
+
+    .trade-container {
+      display: flex;
+      gap: 1rem;
+      overflow-x: auto;
+      padding-bottom: 1rem;
+    }
+
+    .team-card {
+      flex: 1;
+      min-width: 280px;
+      max-width: 320px;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .team-card.valid {
+      border-color: var(--green);
+    }
+
+    .team-card.invalid {
+      border-color: var(--red);
+    }
+
+    .team-header {
+      padding: 1rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .team-select {
+      flex: 1;
+      padding: 0.5rem;
+      font-size: 0.9375rem;
+      font-family: inherit;
+      font-weight: 600;
+      background: transparent;
+      border: none;
       color: var(--text);
+      cursor: pointer;
       outline: none;
-      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    .search-input:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-dim);
+    .team-select option {
+      background: var(--surface);
+      color: var(--text);
     }
 
-    .search-input::placeholder {
+    .remove-team-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0.25rem;
+      font-size: 1.25rem;
+      line-height: 1;
+      transition: color 0.15s;
+    }
+
+    .remove-team-btn:hover {
+      color: var(--red);
+    }
+
+    .team-status {
+      padding: 0.5rem 1rem;
+      background: var(--surface-hover);
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .team-status-item {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .team-body {
+      padding: 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      min-height: 200px;
+    }
+
+    .section-label {
+      font-size: 0.6875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+
+    .players-out, .players-in {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .player-chip {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0.75rem;
+      background: var(--surface-hover);
+      border-radius: 6px;
+      font-size: 0.8125rem;
+    }
+
+    .player-chip-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.125rem;
+    }
+
+    .player-chip-name {
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .player-chip-salary {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
       color: var(--text-secondary);
     }
 
-    .autocomplete-list {
+    .player-chip-remove {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.25rem;
+      line-height: 1;
+    }
+
+    .player-chip-remove:hover {
+      color: var(--red);
+    }
+
+    .player-chip.incoming {
+      background: var(--accent-dim);
+      border: 1px solid var(--accent);
+    }
+
+    .player-chip.incoming .player-chip-remove {
+      display: none;
+    }
+
+    .add-player-container {
+      position: relative;
+      margin-top: auto;
+    }
+
+    .add-player-input {
+      width: 100%;
+      padding: 0.625rem 0.75rem;
+      font-size: 0.8125rem;
+      font-family: inherit;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      outline: none;
+    }
+
+    .add-player-input:focus {
+      border-color: var(--accent);
+    }
+
+    .add-player-input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .player-dropdown {
       position: absolute;
-      top: calc(100% + 4px);
+      bottom: calc(100% + 4px);
       left: 0;
       right: 0;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      max-height: 320px;
+      border-radius: 8px;
+      max-height: 240px;
       overflow-y: auto;
       z-index: 100;
       display: none;
     }
 
-    .autocomplete-list.active {
+    .player-dropdown.active {
       display: block;
     }
 
-    .autocomplete-item {
-      padding: 0.875rem 1.25rem;
+    .player-dropdown-item {
+      padding: 0.625rem 0.75rem;
       cursor: pointer;
       display: flex;
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid var(--border);
-      transition: background 0.15s;
+      font-size: 0.8125rem;
     }
 
-    .autocomplete-item:last-child {
+    .player-dropdown-item:last-child {
       border-bottom: none;
     }
 
-    .autocomplete-item:hover,
-    .autocomplete-item.selected {
+    .player-dropdown-item:hover {
       background: var(--surface-hover);
     }
 
-    .autocomplete-item .player-name {
-      font-weight: 500;
-    }
-
-    .autocomplete-item .player-team {
+    .player-dropdown-item-salary {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
       color: var(--text-secondary);
-      font-size: 0.875rem;
     }
 
-    .selected-player {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 2.5rem;
-      display: none;
-    }
-
-    .selected-player.active {
-      display: block;
-    }
-
-    .selected-player-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 1rem;
-    }
-
-    .selected-player-name {
-      font-size: 1.5rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    .selected-player-team {
-      color: var(--text-secondary);
-      margin-top: 0.25rem;
-    }
-
-    .clear-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-secondary);
-      padding: 0.5rem 1rem;
-      border-radius: 8px;
-      font-family: inherit;
-      font-size: 0.875rem;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-
-    .clear-btn:hover {
+    .team-footer {
+      padding: 1rem;
+      border-top: 1px solid var(--border);
       background: var(--surface-hover);
-      color: var(--text);
+      border-radius: 0 0 12px 12px;
     }
 
-    .selected-player-details {
-      display: flex;
-      gap: 2rem;
-      flex-wrap: wrap;
-    }
-
-    .detail-item {
+    .salary-summary {
       display: flex;
       flex-direction: column;
-      gap: 0.25rem;
+      gap: 0.375rem;
+      font-size: 0.8125rem;
     }
 
-    .detail-label {
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-secondary);
-    }
-
-    .detail-value {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.125rem;
-      font-weight: 500;
-    }
-
-    .results-header {
+    .salary-row {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
     }
 
-    .results-title {
-      font-size: 1.125rem;
-      font-weight: 600;
-    }
-
-    .results-count {
+    .salary-label {
       color: var(--text-secondary);
-      font-size: 0.875rem;
     }
 
-    .results-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: var(--surface);
-      border-radius: 12px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
-
-    .results-table th {
-      text-align: left;
-      padding: 1rem 1.25rem;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      color: var(--text-secondary);
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      font-weight: 600;
-    }
-
-    .results-table td {
-      padding: 1rem 1.25rem;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .results-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .results-table tbody tr {
-      transition: background 0.15s;
-    }
-
-    .results-table tbody tr:hover {
-      background: var(--surface-hover);
-    }
-
-    .player-cell {
+    .salary-value {
+      font-family: 'JetBrains Mono', monospace;
       font-weight: 500;
     }
 
-    .salary-cell {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9375rem;
+    .salary-value.negative {
+      color: var(--red);
     }
 
-    .rating-cell {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9375rem;
-      color: var(--accent);
-      font-weight: 500;
-    }
-
-    .availability-cell {
-      font-size: 0.875rem;
-    }
-
-    .availability-note {
-      color: var(--orange);
-    }
-
-    .available-now {
+    .salary-value.positive {
       color: var(--green);
     }
 
-    .ntc-badge {
-      background: rgba(255, 159, 10, 0.2);
-      color: var(--orange);
-      padding: 0.125rem 0.375rem;
-      border-radius: 4px;
-      font-size: 0.625rem;
+    .salary-row.total {
+      padding-top: 0.375rem;
+      margin-top: 0.375rem;
+      border-top: 1px solid var(--border);
       font-weight: 600;
-      margin-left: 0.5rem;
-      vertical-align: middle;
     }
 
-    .not-available-warning {
-      background: rgba(255, 69, 58, 0.1);
-      border: 1px solid rgba(255, 69, 58, 0.3);
-      color: var(--red);
-      padding: 0.75rem 1rem;
+    .trade-status {
+      margin-top: 1rem;
+      padding: 1rem;
       border-radius: 8px;
-      margin-bottom: 1.5rem;
-      font-size: 0.875rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
     }
 
-    .status-badge {
-      display: inline-block;
-      padding: 0.25rem 0.625rem;
-      border-radius: 6px;
-      font-size: 0.75rem;
+    .trade-status.valid {
+      background: var(--green-dim);
+      border: 1px solid var(--green);
+    }
+
+    .trade-status.invalid {
+      background: var(--red-dim);
+      border: 1px solid var(--red);
+    }
+
+    .trade-status.warning {
+      background: var(--orange-dim);
+      border: 1px solid var(--orange);
+    }
+
+    .trade-status-icon {
+      font-size: 1.5rem;
+    }
+
+    .trade-status-text {
+      flex: 1;
+    }
+
+    .trade-status-title {
       font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.02em;
+      font-size: 0.9375rem;
     }
 
-    .status-cap-space { background: rgba(52, 199, 89, 0.15); color: var(--green); }
-    .status-below-tax { background: rgba(52, 199, 89, 0.15); color: var(--green); }
-    .status-tax-team { background: rgba(255, 159, 10, 0.15); color: var(--orange); }
-    .status-1st-apron { background: rgba(255, 69, 58, 0.15); color: var(--red); }
-    .status-2nd-apron { background: rgba(255, 69, 58, 0.2); color: var(--red); }
+    .trade-status-message {
+      font-size: 0.8125rem;
+      color: var(--text-secondary);
+      margin-top: 0.125rem;
+    }
 
-    .empty-state {
+    .add-team-card {
+      min-width: 200px;
+      max-width: 200px;
+      background: var(--surface);
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      min-height: 400px;
+    }
+
+    .add-team-card:hover {
+      border-color: var(--accent);
+      background: var(--surface-hover);
+    }
+
+    .add-team-content {
       text-align: center;
-      padding: 4rem 2rem;
       color: var(--text-secondary);
     }
 
-    .empty-state-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
-      opacity: 0.5;
+    .add-team-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .add-team-text {
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .ntc-badge, .restriction-badge {
+      font-size: 0.5625rem;
+      padding: 0.125rem 0.3rem;
+      border-radius: 3px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .ntc-badge {
+      background: var(--orange-dim);
+      color: var(--orange);
+    }
+
+    .restriction-badge {
+      background: var(--red-dim);
+      color: var(--red);
     }
 
     .loading {
@@ -360,50 +491,42 @@
       to { transform: rotate(360deg); }
     }
 
-    .no-results {
-      text-align: center;
-      padding: 3rem 2rem;
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 0.5rem 0;
+    }
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .divider-text {
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
       color: var(--text-secondary);
     }
 
-    .sort-btn {
-      background: none;
-      border: none;
-      color: inherit;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-
-    .sort-btn:hover {
-      color: var(--text);
-    }
-
-    .sort-indicator {
-      font-size: 0.625rem;
-    }
-
-    @media (max-width: 640px) {
+    @media (max-width: 768px) {
       .container {
-        padding: 2rem 1rem;
+        padding: 1rem;
       }
 
-      h1 {
-        font-size: 1.5rem;
+      .trade-container {
+        flex-direction: column;
       }
 
-      .selected-player-details {
-        gap: 1.25rem;
+      .team-card, .add-team-card {
+        max-width: none;
+        min-width: auto;
       }
 
-      .results-table th,
-      .results-table td {
-        padding: 0.875rem 1rem;
-      }
-
-      .detail-value {
-        font-size: 1rem;
+      .add-team-card {
+        min-height: 100px;
       }
     }
   </style>
@@ -411,104 +534,47 @@
 <body>
   <div class="container">
     <header>
-      <h1>NBA Trade Calculator</h1>
-      <p class="subtitle">Find salary-matching trade options based on CBA rules</p>
+      <h1>🏀 NBA Trade Calculator</h1>
+      <div class="header-actions">
+        <button class="btn btn-danger" id="resetBtn">Reset Trade</button>
+      </div>
     </header>
-
-    <section class="search-section">
-      <div class="search-container">
-        <input 
-          type="text" 
-          class="search-input" 
-          id="playerSearch" 
-          placeholder="Search for a player..."
-          autocomplete="off"
-        >
-        <div class="autocomplete-list" id="autocompleteList"></div>
-      </div>
-    </section>
-
-    <div class="selected-player" id="selectedPlayer">
-      <div class="selected-player-header">
-        <div>
-          <div class="selected-player-name" id="selectedName"></div>
-          <div class="selected-player-team" id="selectedTeam"></div>
-        </div>
-        <button class="clear-btn" id="clearBtn">Clear</button>
-      </div>
-      <div class="not-available-warning" id="notAvailableWarning" style="display: none;">
-        ⚠️ This player is not available for trade before the trade deadline.
-      </div>
-      <div class="selected-player-details">
-        <div class="detail-item">
-          <span class="detail-label">Salary</span>
-          <span class="detail-value" id="selectedSalary"></span>
-        </div>
-        <div class="detail-item">
-          <span class="detail-label">Team Status</span>
-          <span class="detail-value" id="selectedStatus"></span>
-        </div>
-        <div class="detail-item" id="capSpaceContainer" style="display: none;">
-          <span class="detail-label">Cap Space</span>
-          <span class="detail-value" id="selectedCapSpace"></span>
-        </div>
-      </div>
-    </div>
-
-    <div id="resultsSection" style="display: none;">
-      <div class="results-header">
-        <span class="results-title">Available Trade Targets</span>
-        <span class="results-count" id="resultsCount"></span>
-      </div>
-      <table class="results-table">
-        <thead>
-          <tr>
-            <th><button class="sort-btn" data-sort="player">Player <span class="sort-indicator">▼</span></button></th>
-            <th><button class="sort-btn" data-sort="team">Team <span class="sort-indicator">▼</span></button></th>
-            <th><button class="sort-btn" data-sort="rating">Rating <span class="sort-indicator">▼</span></button></th>
-            <th><button class="sort-btn" data-sort="salary">Salary <span class="sort-indicator">▼</span></button></th>
-            <th><button class="sort-btn" data-sort="status">Team Status <span class="sort-indicator">▼</span></button></th>
-            <th>Availability</th>
-          </tr>
-        </thead>
-        <tbody id="resultsBody"></tbody>
-      </table>
-    </div>
 
     <div class="loading" id="loadingState">
       <div class="spinner"></div>
       <p>Loading player data...</p>
     </div>
 
-    <div class="empty-state" id="emptyState" style="display: none;">
-      <div class="empty-state-icon">🏀</div>
-      <p>Search for a player to see available trade options</p>
-    </div>
+    <div id="mainContent" style="display: none;">
+      <div class="trade-container" id="tradeContainer">
+        <!-- Team cards will be added here -->
+      </div>
 
-    <div class="no-results" id="noResults" style="display: none;">
-      <p>No matching trade targets found for this player</p>
+      <div class="trade-status" id="tradeStatus" style="display: none;">
+        <div class="trade-status-icon" id="tradeStatusIcon">✓</div>
+        <div class="trade-status-text">
+          <div class="trade-status-title" id="tradeStatusTitle">Trade is valid</div>
+          <div class="trade-status-message" id="tradeStatusMessage"></div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
   <script>
     const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSg6im6IYB6HXMGzQbmmBnLw9SfQLzxCSo8OfChxlJLhsB6BBCO0wPF_TMch0YgAbtFqYkwDWrsxRe7/pub?output=csv';
+    const MAX_TEAMS = 5;
 
     let players = [];
-    let selectedPlayer = null;
-    let currentSort = { column: 'rating', direction: 'desc' };
+    let teams = [];
+    let tradeTeams = []; // Array of { teamName, playersOut: [], playersIn: [] }
 
     // DOM Elements
-    const searchInput = document.getElementById('playerSearch');
-    const autocompleteList = document.getElementById('autocompleteList');
-    const selectedPlayerEl = document.getElementById('selectedPlayer');
-    const resultsSection = document.getElementById('resultsSection');
-    const resultsBody = document.getElementById('resultsBody');
-    const resultsCount = document.getElementById('resultsCount');
     const loadingState = document.getElementById('loadingState');
-    const emptyState = document.getElementById('emptyState');
-    const noResults = document.getElementById('noResults');
-    const clearBtn = document.getElementById('clearBtn');
+    const mainContent = document.getElementById('mainContent');
+    const tradeContainer = document.getElementById('tradeContainer');
+    const tradeStatus = document.getElementById('tradeStatus');
+    const resetBtn = document.getElementById('resetBtn');
 
     // Parse salary string to number
     function parseSalary(salaryStr) {
@@ -519,19 +585,35 @@
     // Format number as currency
     function formatSalary(num) {
       if (num === 0) return '$0';
-      return '$' + num.toLocaleString('en-US', { maximumFractionDigits: 0 });
+      const absNum = Math.abs(num);
+      const formatted = '$' + absNum.toLocaleString('en-US', { maximumFractionDigits: 0 });
+      return num < 0 ? '-' + formatted : formatted;
     }
 
-    // Get status class for badge
-    function getStatusClass(status) {
-      const statusMap = {
-        'Cap Space': 'status-cap-space',
-        'Below Tax': 'status-below-tax',
-        'Tax Team': 'status-tax-team',
-        '1st Apron': 'status-1st-apron',
-        '2nd Apron': 'status-2nd-apron'
+    // Get unique teams from players
+    function getUniqueTeams() {
+      const teamSet = new Set(players.map(p => p.team));
+      return Array.from(teamSet).sort();
+    }
+
+    // Get team info (status, cap space, hardcap) from first player of that team
+    function getTeamInfo(teamName) {
+      const teamPlayer = players.find(p => p.team === teamName);
+      if (!teamPlayer) return null;
+      return {
+        name: teamName,
+        status: teamPlayer.status,
+        capSpace: teamPlayer.capSpace,
+        apronRoom1st: teamPlayer.apronRoom1st,
+        apronRoom2nd: teamPlayer.apronRoom2nd,
+        isHardcap1st: teamPlayer.isHardcap1st,
+        isHardcap2nd: teamPlayer.isHardcap2nd
       };
-      return statusMap[status] || '';
+    }
+
+    // Get players for a specific team
+    function getTeamPlayers(teamName) {
+      return players.filter(p => p.team === teamName);
     }
 
     // Calculate max incoming salary based on team status and outgoing salary
@@ -548,185 +630,403 @@
       }
     }
 
-    // Check if trade is valid both ways
-    function isValidTrade(player1, player2) {
-      // Can't trade with same team
-      if (player1.team === player2.team) return false;
+    // Validate a team's side of the trade
+    function validateTeamTrade(tradeTeam) {
+      const teamInfo = getTeamInfo(tradeTeam.teamName);
+      if (!teamInfo) return { valid: false, message: 'Team not found' };
 
-      // Skip players not available before trade deadline
-      if (player2.tradeAvailable.toLowerCase() === 'not available') return false;
+      const outgoingSalary = tradeTeam.playersOut.reduce((sum, p) => sum + p.salary, 0);
+      const incomingSalary = tradeTeam.playersIn.reduce((sum, p) => sum + p.salary, 0);
+      const netIncoming = incomingSalary - outgoingSalary;
 
-      // Get effective salaries (two-way = 0)
-      const salary1 = player1.salary;
-      const salary2 = player2.salary;
+      // Check hardcap
+      if (teamInfo.isHardcap1st && netIncoming > teamInfo.apronRoom1st) {
+        return { 
+          valid: false, 
+          message: `Exceeds 1st apron hardcap by ${formatSalary(netIncoming - teamInfo.apronRoom1st)}` 
+        };
+      }
+      if (teamInfo.isHardcap2nd && netIncoming > teamInfo.apronRoom2nd) {
+        return { 
+          valid: false, 
+          message: `Exceeds 2nd apron hardcap by ${formatSalary(netIncoming - teamInfo.apronRoom2nd)}` 
+        };
+      }
 
-      // Team 1 receiving player 2 - check hardcaps
-      // Net incoming = salary2 - salary1 (what team 1 adds to payroll)
-      const team1NetIncoming = salary2 - salary1;
-      if (player1.isHardcap1st && team1NetIncoming > player1.apronRoom1st) return false;
-      if (player1.isHardcap2nd && team1NetIncoming > player1.apronRoom2nd) return false;
+      // Check salary matching
+      const maxIncoming = getMaxIncoming(teamInfo.status, outgoingSalary, teamInfo.capSpace);
+      if (incomingSalary > maxIncoming) {
+        const deficit = incomingSalary - maxIncoming;
+        return { 
+          valid: false, 
+          message: `Need to send out ${formatSalary(deficit)} more in salary` 
+        };
+      }
 
-      // Team 2 receiving player 1 - check hardcaps
-      // Net incoming = salary1 - salary2 (what team 2 adds to payroll)
-      const team2NetIncoming = salary1 - salary2;
-      if (player2.isHardcap1st && team2NetIncoming > player2.apronRoom1st) return false;
-      if (player2.isHardcap2nd && team2NetIncoming > player2.apronRoom2nd) return false;
-
-      // Team 1 receiving player 2
-      const team1CanReceive = getMaxIncoming(player1.status, salary1, player1.capSpace);
-      if (salary2 > team1CanReceive) return false;
-
-      // Team 2 receiving player 1
-      const team2CanReceive = getMaxIncoming(player2.status, salary2, player2.capSpace);
-      if (salary1 > team2CanReceive) return false;
-
-      return true;
-    }
-
-    // Find all valid trade targets for a player
-    function findTradeTargets(player) {
-      return players.filter(p => isValidTrade(player, p));
-    }
-
-    // Sort results
-    function sortResults(results, column, direction) {
-      return [...results].sort((a, b) => {
-        let valA, valB;
-        
-        switch (column) {
-          case 'player':
-            valA = a.player.toLowerCase();
-            valB = b.player.toLowerCase();
-            break;
-          case 'team':
-            valA = a.team.toLowerCase();
-            valB = b.team.toLowerCase();
-            break;
-          case 'salary':
-            valA = a.salary;
-            valB = b.salary;
-            break;
-          case 'status':
-            valA = a.status;
-            valB = b.status;
-            break;
-          case 'rating':
-            valA = a.globalRating;
-            valB = b.globalRating;
-            break;
-          default:
-            return 0;
+      // Check for trade restrictions
+      const restrictions = [];
+      tradeTeam.playersOut.forEach(p => {
+        if (p.tradeAvailable && p.tradeAvailable.toLowerCase() === 'not available') {
+          restrictions.push(`${p.player} cannot be traded before deadline`);
+        } else if (p.tradeAvailable) {
+          restrictions.push(`${p.player} available ${p.tradeAvailable}`);
         }
+        if (p.noTradeClause) {
+          restrictions.push(`${p.player} has a no-trade clause`);
+        }
+      });
 
-        if (valA < valB) return direction === 'asc' ? -1 : 1;
-        if (valA > valB) return direction === 'asc' ? 1 : -1;
-        return 0;
+      return { 
+        valid: true, 
+        message: restrictions.length > 0 ? restrictions.join('; ') : 'Trade works',
+        warnings: restrictions
+      };
+    }
+
+    // Validate entire trade
+    function validateTrade() {
+      // Need at least 2 teams
+      const activeTeams = tradeTeams.filter(t => t.teamName && (t.playersOut.length > 0 || t.playersIn.length > 0));
+      if (activeTeams.length < 2) {
+        return { valid: false, message: 'Add players to at least 2 teams', type: 'warning' };
+      }
+
+      // Check that all outgoing players are received by someone
+      const allOut = [];
+      const allIn = [];
+      activeTeams.forEach(t => {
+        t.playersOut.forEach(p => allOut.push({ ...p, fromTeam: t.teamName }));
+        t.playersIn.forEach(p => allIn.push({ ...p, toTeam: t.teamName }));
+      });
+
+      // Verify balance - every player sent out should be received by another team
+      if (allOut.length !== allIn.length) {
+        return { valid: false, message: 'Trade is not balanced - players must go to another team', type: 'invalid' };
+      }
+
+      // Validate each team's side
+      let allValid = true;
+      let allWarnings = [];
+      activeTeams.forEach(t => {
+        const result = validateTeamTrade(t);
+        if (!result.valid) {
+          allValid = false;
+        }
+        if (result.warnings) {
+          allWarnings = allWarnings.concat(result.warnings);
+        }
+      });
+
+      if (!allValid) {
+        return { valid: false, message: 'One or more teams cannot complete this trade', type: 'invalid' };
+      }
+
+      if (allWarnings.length > 0) {
+        return { valid: true, message: allWarnings.join('; '), type: 'warning' };
+      }
+
+      return { valid: true, message: 'All teams can complete this trade', type: 'valid' };
+    }
+
+    // Distribute players - when a player is added to "out", they need to go "in" to another team
+    function redistributePlayers() {
+      // Clear all incoming players
+      tradeTeams.forEach(t => t.playersIn = []);
+
+      // For each player being sent out, they go to... where?
+      // In a multi-team trade, we need to let user decide where each player goes
+      // For now, simple 2-team logic: players go to the other team
+      // For 3+ teams, we'll need a more complex UI
+
+      const activeTeams = tradeTeams.filter(t => t.teamName && t.playersOut.length > 0);
+      
+      if (activeTeams.length === 2) {
+        // Simple swap
+        activeTeams[0].playersIn = [...activeTeams[1].playersOut];
+        activeTeams[1].playersIn = [...activeTeams[0].playersOut];
+      } else if (activeTeams.length > 2) {
+        // For now, rotate: Team 1 gets from Team 2, Team 2 gets from Team 3, etc.
+        // User can manually adjust by removing and re-adding
+        for (let i = 0; i < activeTeams.length; i++) {
+          const nextIndex = (i + 1) % activeTeams.length;
+          activeTeams[i].playersIn = [...activeTeams[nextIndex].playersOut];
+        }
+      }
+    }
+
+    // Render a single team card
+    function renderTeamCard(tradeTeam, index) {
+      const teamInfo = tradeTeam.teamName ? getTeamInfo(tradeTeam.teamName) : null;
+      const validation = tradeTeam.teamName && (tradeTeam.playersOut.length > 0 || tradeTeam.playersIn.length > 0) 
+        ? validateTeamTrade(tradeTeam) 
+        : null;
+
+      const outgoingSalary = tradeTeam.playersOut.reduce((sum, p) => sum + p.salary, 0);
+      const incomingSalary = tradeTeam.playersIn.reduce((sum, p) => sum + p.salary, 0);
+      const netSalary = incomingSalary - outgoingSalary;
+
+      const cardClass = validation ? (validation.valid ? 'valid' : 'invalid') : '';
+
+      const availableTeams = getUniqueTeams().filter(t => 
+        t === tradeTeam.teamName || !tradeTeams.some(tt => tt.teamName === t)
+      );
+
+      return `
+        <div class="team-card ${cardClass}" data-index="${index}">
+          <div class="team-header">
+            <select class="team-select" data-index="${index}">
+              <option value="">Select Team...</option>
+              ${availableTeams.map(t => `
+                <option value="${t}" ${t === tradeTeam.teamName ? 'selected' : ''}>${t}</option>
+              `).join('')}
+            </select>
+            ${tradeTeams.length > 2 ? `
+              <button class="remove-team-btn" data-index="${index}">×</button>
+            ` : ''}
+          </div>
+          
+          ${teamInfo ? `
+            <div class="team-status">
+              <span class="team-status-item">
+                <strong>${teamInfo.status}</strong>
+              </span>
+              ${teamInfo.isHardcap1st ? `<span class="team-status-item" style="color: var(--orange);">HC 1st</span>` : ''}
+              ${teamInfo.isHardcap2nd ? `<span class="team-status-item" style="color: var(--orange);">HC 2nd</span>` : ''}
+            </div>
+          ` : ''}
+          
+          <div class="team-body">
+            <div class="players-out">
+              <div class="section-label">Sends Out</div>
+              ${tradeTeam.playersOut.map((p, pIndex) => `
+                <div class="player-chip">
+                  <div class="player-chip-info">
+                    <div class="player-chip-name">
+                      ${p.player}
+                      ${p.noTradeClause ? '<span class="ntc-badge">NTC</span>' : ''}
+                      ${p.tradeAvailable ? '<span class="restriction-badge">!</span>' : ''}
+                    </div>
+                    <div class="player-chip-salary">${formatSalary(p.salary)}</div>
+                  </div>
+                  <button class="player-chip-remove" data-team="${index}" data-player="${pIndex}">×</button>
+                </div>
+              `).join('')}
+              
+              ${tradeTeam.teamName ? `
+                <div class="add-player-container">
+                  <input 
+                    type="text" 
+                    class="add-player-input" 
+                    placeholder="Add player..."
+                    data-team="${index}"
+                  >
+                  <div class="player-dropdown" data-team="${index}"></div>
+                </div>
+              ` : ''}
+            </div>
+            
+            ${tradeTeam.playersIn.length > 0 ? `
+              <div class="divider">
+                <div class="divider-line"></div>
+                <div class="divider-text">Receives</div>
+                <div class="divider-line"></div>
+              </div>
+              
+              <div class="players-in">
+                ${tradeTeam.playersIn.map(p => `
+                  <div class="player-chip incoming">
+                    <div class="player-chip-info">
+                      <div class="player-chip-name">${p.player}</div>
+                      <div class="player-chip-salary">${formatSalary(p.salary)}</div>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+          </div>
+          
+          ${tradeTeam.teamName && (tradeTeam.playersOut.length > 0 || tradeTeam.playersIn.length > 0) ? `
+            <div class="team-footer">
+              <div class="salary-summary">
+                <div class="salary-row">
+                  <span class="salary-label">Outgoing</span>
+                  <span class="salary-value">${formatSalary(outgoingSalary)}</span>
+                </div>
+                <div class="salary-row">
+                  <span class="salary-label">Incoming</span>
+                  <span class="salary-value">${formatSalary(incomingSalary)}</span>
+                </div>
+                <div class="salary-row total">
+                  <span class="salary-label">Net</span>
+                  <span class="salary-value ${netSalary > 0 ? 'negative' : netSalary < 0 ? 'positive' : ''}">${netSalary > 0 ? '+' : ''}${formatSalary(netSalary)}</span>
+                </div>
+              </div>
+              ${validation && !validation.valid ? `
+                <div style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--red);">
+                  ⚠️ ${validation.message}
+                </div>
+              ` : ''}
+              ${validation && validation.warnings && validation.warnings.length > 0 ? `
+                <div style="margin-top: 0.5rem; font-size: 0.75rem; color: var(--orange);">
+                  ⚠️ ${validation.warnings.join('; ')}
+                </div>
+              ` : ''}
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    // Render add team card
+    function renderAddTeamCard() {
+      if (tradeTeams.length >= MAX_TEAMS) return '';
+      return `
+        <div class="add-team-card" id="addTeamCard">
+          <div class="add-team-content">
+            <div class="add-team-icon">+</div>
+            <div class="add-team-text">Add Team</div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Render trade status
+    function renderTradeStatus() {
+      const validation = validateTrade();
+      
+      if (!tradeTeams.some(t => t.playersOut.length > 0)) {
+        tradeStatus.style.display = 'none';
+        return;
+      }
+
+      tradeStatus.style.display = 'flex';
+      tradeStatus.className = 'trade-status ' + validation.type;
+      
+      document.getElementById('tradeStatusIcon').textContent = 
+        validation.type === 'valid' ? '✓' : 
+        validation.type === 'warning' ? '⚠️' : '✗';
+      
+      document.getElementById('tradeStatusTitle').textContent = 
+        validation.type === 'valid' ? 'Trade is valid' :
+        validation.type === 'warning' ? 'Trade has warnings' : 'Trade is invalid';
+      
+      document.getElementById('tradeStatusMessage').textContent = validation.message;
+    }
+
+    // Main render function
+    function render() {
+      tradeContainer.innerHTML = tradeTeams.map((t, i) => renderTeamCard(t, i)).join('') + renderAddTeamCard();
+      renderTradeStatus();
+      attachEventListeners();
+    }
+
+    // Attach event listeners
+    function attachEventListeners() {
+      // Team select change
+      document.querySelectorAll('.team-select').forEach(select => {
+        select.addEventListener('change', (e) => {
+          const index = parseInt(e.target.dataset.index);
+          tradeTeams[index].teamName = e.target.value;
+          tradeTeams[index].playersOut = [];
+          tradeTeams[index].playersIn = [];
+          redistributePlayers();
+          render();
+        });
+      });
+
+      // Remove team
+      document.querySelectorAll('.remove-team-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const index = parseInt(e.target.dataset.index);
+          tradeTeams.splice(index, 1);
+          redistributePlayers();
+          render();
+        });
+      });
+
+      // Remove player
+      document.querySelectorAll('.player-chip-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const teamIndex = parseInt(e.target.dataset.team);
+          const playerIndex = parseInt(e.target.dataset.player);
+          tradeTeams[teamIndex].playersOut.splice(playerIndex, 1);
+          redistributePlayers();
+          render();
+        });
+      });
+
+      // Add team
+      const addTeamCard = document.getElementById('addTeamCard');
+      if (addTeamCard) {
+        addTeamCard.addEventListener('click', () => {
+          tradeTeams.push({ teamName: '', playersOut: [], playersIn: [] });
+          render();
+        });
+      }
+
+      // Player search inputs
+      document.querySelectorAll('.add-player-input').forEach(input => {
+        const teamIndex = parseInt(input.dataset.team);
+        const dropdown = document.querySelector(`.player-dropdown[data-team="${teamIndex}"]`);
+        
+        input.addEventListener('input', (e) => {
+          const query = e.target.value.toLowerCase();
+          if (query.length < 2) {
+            dropdown.classList.remove('active');
+            return;
+          }
+
+          const teamName = tradeTeams[teamIndex].teamName;
+          const teamPlayers = getTeamPlayers(teamName);
+          const alreadyAdded = tradeTeams[teamIndex].playersOut.map(p => p.player);
+          
+          const matches = teamPlayers
+            .filter(p => p.player.toLowerCase().includes(query))
+            .filter(p => !alreadyAdded.includes(p.player))
+            .slice(0, 8);
+
+          if (matches.length === 0) {
+            dropdown.classList.remove('active');
+            return;
+          }
+
+          dropdown.innerHTML = matches.map(p => `
+            <div class="player-dropdown-item" data-player="${p.player}">
+              <span>${p.player}</span>
+              <span class="player-dropdown-item-salary">${formatSalary(p.salary)}</span>
+            </div>
+          `).join('');
+
+          dropdown.classList.add('active');
+
+          // Attach click listeners to dropdown items
+          dropdown.querySelectorAll('.player-dropdown-item').forEach(item => {
+            item.addEventListener('click', () => {
+              const playerName = item.dataset.player;
+              const player = teamPlayers.find(p => p.player === playerName);
+              if (player) {
+                tradeTeams[teamIndex].playersOut.push(player);
+                redistributePlayers();
+                render();
+              }
+            });
+          });
+        });
+
+        input.addEventListener('blur', () => {
+          setTimeout(() => dropdown.classList.remove('active'), 200);
+        });
       });
     }
 
-    // Render results table
-    function renderResults(results) {
-      if (results.length === 0) {
-        resultsSection.style.display = 'none';
-        noResults.style.display = 'block';
-        return;
-      }
-
-      noResults.style.display = 'none';
-      resultsSection.style.display = 'block';
-      resultsCount.textContent = `${results.length} player${results.length !== 1 ? 's' : ''}`;
-
-      const sorted = sortResults(results, currentSort.column, currentSort.direction);
-
-      resultsBody.innerHTML = sorted.map(p => `
-        <tr>
-          <td class="player-cell">${p.player}${p.noTradeClause ? ' <span class="ntc-badge">NTC</span>' : ''}</td>
-          <td>${p.team}</td>
-          <td class="rating-cell">${p.globalRating > 0 ? p.globalRating.toFixed(1) : '-'}</td>
-          <td class="salary-cell">${formatSalary(p.salary)}</td>
-          <td><span class="status-badge ${getStatusClass(p.status)}">${p.status}</span></td>
-          <td class="availability-cell">${p.tradeAvailable ? `<span class="availability-note">Available ${p.tradeAvailable}</span>` : '<span class="available-now">Now</span>'}</td>
-        </tr>
-      `).join('');
-    }
-
-    // Show autocomplete suggestions
-    function showSuggestions(query) {
-      if (!query || query.length < 2) {
-        autocompleteList.classList.remove('active');
-        return;
-      }
-
-      const matches = players
-        .filter(p => p.player.toLowerCase().includes(query.toLowerCase()))
-        .slice(0, 10);
-
-      if (matches.length === 0) {
-        autocompleteList.classList.remove('active');
-        return;
-      }
-
-      autocompleteList.innerHTML = matches.map(p => `
-        <div class="autocomplete-item" data-player="${p.player}">
-          <span class="player-name">${p.player}</span>
-          <span class="player-team">${p.team}</span>
-        </div>
-      `).join('');
-
-      autocompleteList.classList.add('active');
-    }
-
-    // Select a player
-    function selectPlayer(playerName) {
-      const player = players.find(p => p.player === playerName);
-      if (!player) return;
-
-      selectedPlayer = player;
-      searchInput.value = '';
-      autocompleteList.classList.remove('active');
-      emptyState.style.display = 'none';
-
-      // Update selected player display
-      document.getElementById('selectedName').textContent = player.player;
-      document.getElementById('selectedTeam').textContent = player.team;
-      document.getElementById('selectedSalary').textContent = formatSalary(player.salary);
-      document.getElementById('selectedStatus').textContent = player.status;
-
-      const capSpaceContainer = document.getElementById('capSpaceContainer');
-      if (player.status === 'Cap Space' && player.capSpace > 0) {
-        capSpaceContainer.style.display = 'block';
-        document.getElementById('selectedCapSpace').textContent = formatSalary(player.capSpace);
-      } else {
-        capSpaceContainer.style.display = 'none';
-      }
-
-      selectedPlayerEl.classList.add('active');
-
-      // Check if player is not available for trade
-      const notAvailableWarning = document.getElementById('notAvailableWarning');
-      if (player.tradeAvailable.toLowerCase() === 'not available') {
-        notAvailableWarning.style.display = 'block';
-        resultsSection.style.display = 'none';
-        noResults.style.display = 'none';
-        return;
-      } else {
-        notAvailableWarning.style.display = 'none';
-      }
-
-      // Find and display trade targets
-      const targets = findTradeTargets(player);
-      renderResults(targets);
-    }
-
-    // Clear selection
-    function clearSelection() {
-      selectedPlayer = null;
-      selectedPlayerEl.classList.remove('active');
-      resultsSection.style.display = 'none';
-      noResults.style.display = 'none';
-      emptyState.style.display = 'block';
-      searchInput.value = '';
-    }
+    // Reset trade
+    resetBtn.addEventListener('click', () => {
+      tradeTeams = [
+        { teamName: '', playersOut: [], playersIn: [] },
+        { teamName: '', playersOut: [], playersIn: [] }
+      ];
+      render();
+    });
 
     // Load data
     async function loadData() {
@@ -740,40 +1040,37 @@
           complete: function(results) {
             players = results.data
               .filter(row => row.PLAYER && row.PLAYER.trim())
-              .filter(row => row.TEAM && row.TEAM.trim()) // Exclude players without a team
+              .filter(row => row.TEAM && row.TEAM.trim())
               .filter(row => {
-                const status = row['ST 25-26']?.trim() || row['Team Status']?.trim() || '';
-                return !status.toLowerCase().includes('10-day'); // Exclude 10-day contracts
+                const status = row['ST 25-26']?.trim() || '';
+                return !status.toLowerCase().includes('10-day');
               })
-              .map(row => {
-                const player = {
-                  player: row.PLAYER?.trim() || '',
-                  team: row.TEAM?.trim() || '',
-                  salary: parseSalary(row['2026']),
-                  status: row['ST 25-26']?.trim() || row['Team Status']?.trim() || '',
-                  capSpace: parseSalary(row['Cap Space'] || row['H'] || 0),
-                  globalRating: parseFloat(row['RAT 365'] || 0) || 0,
-                  noTradeClause: (row['NO TRADE'] || '').toString().trim().toUpperCase() === 'YES',
-                  apronRoom1st: parseSalary(row['1st APRON'] || row['L'] || 0),
-                  apronRoom2nd: parseSalary(row['2nd APRON'] || row['N'] || 0),
-                  isHardcap1st: (row['HARD CAP 1st?'] || row['M'] || '').toString().trim().toLowerCase().includes('hc'),
-                  isHardcap2nd: (row['HARD CAP 2nd?'] || row['O'] || '').toString().trim().toLowerCase().includes('hc'),
-                  tradeAvailable: row['RESTRICTIONS']?.trim() || ''
-                };
-                // Debug logging for Lakers players
-                if (player.team === 'LA Lakers') {
-                  console.log('Lakers player:', player.player, 'HC1st raw:', row['HARD CAP 1st?'], 'isHardcap1st:', player.isHardcap1st, 'apronRoom1st:', player.apronRoom1st);
-                }
-                return player;
-              });
+              .map(row => ({
+                player: row.PLAYER?.trim() || '',
+                team: row.TEAM?.trim() || '',
+                salary: parseSalary(row['2026']),
+                status: row['ST 25-26']?.trim() || '',
+                capSpace: parseSalary(row['Cap Space'] || row['H'] || 0),
+                globalRating: parseFloat(row['RAT 365'] || 0) || 0,
+                noTradeClause: (row['NO TRADE'] || '').toString().trim().toUpperCase() === 'YES',
+                apronRoom1st: parseSalary(row['1st APRON'] || 0),
+                apronRoom2nd: parseSalary(row['2nd APRON'] || 0),
+                isHardcap1st: (row['HARD CAP 1st?'] || '').toString().trim().toLowerCase().includes('hc'),
+                isHardcap2nd: (row['HARD CAP 2nd?'] || '').toString().trim().toLowerCase().includes('hc'),
+                tradeAvailable: row['RESTRICTIONS']?.trim() || ''
+              }));
+
+            teams = getUniqueTeams();
             
-            // Log all column headers from first row
-            if (results.data.length > 0) {
-              console.log('CSV Headers:', Object.keys(results.data[0]));
-            }
+            // Initialize with 2 empty team slots
+            tradeTeams = [
+              { teamName: '', playersOut: [], playersIn: [] },
+              { teamName: '', playersOut: [], playersIn: [] }
+            ];
 
             loadingState.style.display = 'none';
-            emptyState.style.display = 'block';
+            mainContent.style.display = 'block';
+            render();
           },
           error: function(error) {
             console.error('Parse error:', error);
@@ -785,73 +1082,6 @@
         loadingState.innerHTML = '<p>Error loading data. Please refresh the page.</p>';
       }
     }
-
-    // Event listeners
-    searchInput.addEventListener('input', (e) => {
-      showSuggestions(e.target.value);
-    });
-
-    searchInput.addEventListener('focus', () => {
-      if (searchInput.value.length >= 2) {
-        showSuggestions(searchInput.value);
-      }
-    });
-
-    autocompleteList.addEventListener('click', (e) => {
-      const item = e.target.closest('.autocomplete-item');
-      if (item) {
-        selectPlayer(item.dataset.player);
-      }
-    });
-
-    clearBtn.addEventListener('click', clearSelection);
-
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.search-container')) {
-        autocompleteList.classList.remove('active');
-      }
-    });
-
-    // Keyboard navigation for autocomplete
-    let selectedIndex = -1;
-    searchInput.addEventListener('keydown', (e) => {
-      const items = autocompleteList.querySelectorAll('.autocomplete-item');
-      
-      if (e.key === 'ArrowDown') {
-        e.preventDefault();
-        selectedIndex = Math.min(selectedIndex + 1, items.length - 1);
-        items.forEach((item, i) => item.classList.toggle('selected', i === selectedIndex));
-      } else if (e.key === 'ArrowUp') {
-        e.preventDefault();
-        selectedIndex = Math.max(selectedIndex - 1, 0);
-        items.forEach((item, i) => item.classList.toggle('selected', i === selectedIndex));
-      } else if (e.key === 'Enter' && selectedIndex >= 0) {
-        e.preventDefault();
-        selectPlayer(items[selectedIndex].dataset.player);
-        selectedIndex = -1;
-      } else if (e.key === 'Escape') {
-        autocompleteList.classList.remove('active');
-        selectedIndex = -1;
-      }
-    });
-
-    // Sort buttons
-    document.querySelectorAll('.sort-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const column = btn.dataset.sort;
-        if (currentSort.column === column) {
-          currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
-        } else {
-          currentSort.column = column;
-          currentSort.direction = 'desc';
-        }
-        
-        if (selectedPlayer) {
-          const targets = findTradeTargets(selectedPlayer);
-          renderResults(targets);
-        }
-      });
-    });
 
     // Initialize
     loadData();
