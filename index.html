@@ -291,6 +291,17 @@
       color: var(--green);
     }
 
+    .ntc-badge {
+      background: rgba(255, 159, 10, 0.2);
+      color: var(--orange);
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      font-size: 0.625rem;
+      font-weight: 600;
+      margin-left: 0.5rem;
+      vertical-align: middle;
+    }
+
     .not-available-warning {
       background: rgba(255, 69, 58, 0.1);
       border: 1px solid rgba(255, 69, 58, 0.3);
@@ -549,17 +560,17 @@
       const salary1 = player1.salary;
       const salary2 = player2.salary;
 
-      // Team 1 receiving player 2 - check hardcaps (room available)
+      // Team 1 receiving player 2 - check hardcaps
       // Net incoming = salary2 - salary1 (what team 1 adds to payroll)
       const team1NetIncoming = salary2 - salary1;
-      if (player1.hardcap1st > 0 && team1NetIncoming > player1.hardcap1st) return false;
-      if (player1.hardcap2nd > 0 && team1NetIncoming > player1.hardcap2nd) return false;
+      if (player1.isHardcap1st && team1NetIncoming > player1.apronRoom1st) return false;
+      if (player1.isHardcap2nd && team1NetIncoming > player1.apronRoom2nd) return false;
 
-      // Team 2 receiving player 1 - check hardcaps (room available)
+      // Team 2 receiving player 1 - check hardcaps
       // Net incoming = salary1 - salary2 (what team 2 adds to payroll)
       const team2NetIncoming = salary1 - salary2;
-      if (player2.hardcap1st > 0 && team2NetIncoming > player2.hardcap1st) return false;
-      if (player2.hardcap2nd > 0 && team2NetIncoming > player2.hardcap2nd) return false;
+      if (player2.isHardcap1st && team2NetIncoming > player2.apronRoom1st) return false;
+      if (player2.isHardcap2nd && team2NetIncoming > player2.apronRoom2nd) return false;
 
       // Team 1 receiving player 2
       const team1CanReceive = getMaxIncoming(player1.status, salary1, player1.capSpace);
@@ -629,7 +640,7 @@
 
       resultsBody.innerHTML = sorted.map(p => `
         <tr>
-          <td class="player-cell">${p.player}</td>
+          <td class="player-cell">${p.player}${p.noTradeClause ? ' <span class="ntc-badge">NTC</span>' : ''}</td>
           <td>${p.team}</td>
           <td class="rating-cell">${p.globalRating > 0 ? p.globalRating.toFixed(1) : '-'}</td>
           <td class="salary-cell">${formatSalary(p.salary)}</td>
@@ -734,17 +745,32 @@
                 const status = row['ST 25-26']?.trim() || row['Team Status']?.trim() || '';
                 return !status.toLowerCase().includes('10-day'); // Exclude 10-day contracts
               })
-              .map(row => ({
-                player: row.PLAYER?.trim() || '',
-                team: row.TEAM?.trim() || '',
-                salary: parseSalary(row['2026']),
-                status: row['ST 25-26']?.trim() || row['Team Status']?.trim() || '',
-                capSpace: parseSalary(row['Cap Space'] || row['H'] || 0),
-                globalRating: parseFloat(row['RAT 365'] || 0) || 0,
-                hardcap1st: parseSalary(row['HARD CAP 1st?'] || 0),
-                hardcap2nd: parseSalary(row['HARD CAP 2nd?'] || 0),
-                tradeAvailable: row['RESTRICTIONS']?.trim() || ''
-              }));
+              .map(row => {
+                const player = {
+                  player: row.PLAYER?.trim() || '',
+                  team: row.TEAM?.trim() || '',
+                  salary: parseSalary(row['2026']),
+                  status: row['ST 25-26']?.trim() || row['Team Status']?.trim() || '',
+                  capSpace: parseSalary(row['Cap Space'] || row['H'] || 0),
+                  globalRating: parseFloat(row['RAT 365'] || 0) || 0,
+                  noTradeClause: (row['NO TRADE'] || '').toString().trim().toUpperCase() === 'YES',
+                  apronRoom1st: parseSalary(row['1st APRON'] || row['L'] || 0),
+                  apronRoom2nd: parseSalary(row['2nd APRON'] || row['N'] || 0),
+                  isHardcap1st: (row['HARD CAP 1st?'] || row['M'] || '').toString().trim().toLowerCase().includes('hc'),
+                  isHardcap2nd: (row['HARD CAP 2nd?'] || row['O'] || '').toString().trim().toLowerCase().includes('hc'),
+                  tradeAvailable: row['RESTRICTIONS']?.trim() || ''
+                };
+                // Debug logging for Lakers players
+                if (player.team === 'LA Lakers') {
+                  console.log('Lakers player:', player.player, 'HC1st raw:', row['HARD CAP 1st?'], 'isHardcap1st:', player.isHardcap1st, 'apronRoom1st:', player.apronRoom1st);
+                }
+                return player;
+              });
+            
+            // Log all column headers from first row
+            if (results.data.length > 0) {
+              console.log('CSV Headers:', Object.keys(results.data[0]));
+            }
 
             loadingState.style.display = 'none';
             emptyState.style.display = 'block';
