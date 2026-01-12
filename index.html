@@ -649,6 +649,14 @@
       };
     }
 
+    // Get trade salary (Two-Way contracts count as $0)
+    function getTradeSalary(player) {
+      if (player.contractStatus && player.contractStatus.toUpperCase().includes('TWO-WAY')) {
+        return 0;
+      }
+      return player.salary;
+    }
+
     // Get players for a specific team
     function getTeamPlayers(teamName) {
       return players.filter(p => p.team === teamName);
@@ -1151,7 +1159,7 @@
                 salary: parseSalary(row['2026']),
                 contractStatus: row['ST 25-26']?.trim() || '',
                 teamStatus: row['TEAM STATUS']?.trim() || '',
-                capSpace: parseSalary(row['Cap Space'] || row['H'] || 0),
+                capSpace: parseSalary(row['CAP SPACE'] || row['Cap Space'] || row['H'] || 0),
                 globalRating: parseFloat(row['RAT 365'] || 0) || 0,
                 noTradeClause: (row['NO TRADE'] || '').toString().trim().toUpperCase() === 'YES',
                 apronRoom1st: parseSalary(row['1st APRON'] || 0),
