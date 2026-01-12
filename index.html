@@ -1153,23 +1153,35 @@
                 const contractStatus = row['ST 25-26']?.trim() || '';
                 return !contractStatus.toLowerCase().includes('10-day');
               })
-              .map(row => ({
-                player: row.PLAYER?.trim() || '',
-                team: row.TEAM?.trim() || '',
-                salary: parseSalary(row['2026']),
-                contractStatus: row['ST 25-26']?.trim() || '',
-                teamStatus: row['TEAM STATUS']?.trim() || '',
-                capSpace: parseSalary(row['CAP SPACE'] || row['Cap Space'] || row['H'] || 0),
-                globalRating: parseFloat(row['RAT 365'] || 0) || 0,
-                noTradeClause: (row['NO TRADE'] || '').toString().trim().toUpperCase() === 'YES',
-                apronRoom1st: parseSalary(row['1st APRON'] || 0),
-                apronRoom2nd: parseSalary(row['2nd APRON'] || 0),
-                isHardcap1st: (row['HARD CAP 1st?'] || '').toString().trim().toLowerCase().includes('hc'),
-                isHardcap2nd: (row['HARD CAP 2nd?'] || '').toString().trim().toLowerCase().includes('hc'),
-                tradeAvailable: row['RESTRICTIONS']?.trim() || ''
-              }));
+              .map(row => {
+                const player = {
+                  player: row.PLAYER?.trim() || '',
+                  team: row.TEAM?.trim() || '',
+                  salary: parseSalary(row['2026']),
+                  contractStatus: row['ST 25-26']?.trim() || '',
+                  teamStatus: row['TEAM STATUS']?.trim() || '',
+                  capSpace: parseSalary(row['CAP SPACE'] || row['Cap Space'] || row['H'] || 0),
+                  globalRating: parseFloat(row['RAT 365'] || 0) || 0,
+                  noTradeClause: (row['NO TRADE'] || '').toString().trim().toUpperCase() === 'YES',
+                  apronRoom1st: parseSalary(row['1st APRON'] || 0),
+                  apronRoom2nd: parseSalary(row['2nd APRON'] || 0),
+                  isHardcap1st: (row['HARD CAP 1st?'] || '').toString().trim().toLowerCase().includes('hc'),
+                  isHardcap2nd: (row['HARD CAP 2nd?'] || '').toString().trim().toLowerCase().includes('hc'),
+                  tradeAvailable: row['RESTRICTIONS']?.trim() || ''
+                };
+                // Debug logging for Brooklyn players
+                if (player.team === 'Brooklyn') {
+                  console.log('Brooklyn player:', player.player, 'teamStatus:', player.teamStatus, 'capSpace:', player.capSpace, 'raw CAP SPACE:', row['CAP SPACE']);
+                }
+                return player;
+              });
 
             teams = getUniqueTeams();
+            
+            // Log CSV headers
+            if (results.data.length > 0) {
+              console.log('CSV Headers:', Object.keys(results.data[0]));
+            }
             
             // Initialize with 2 empty team slots
             tradeTeams = [
