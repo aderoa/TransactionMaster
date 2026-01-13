@@ -1237,7 +1237,7 @@
       
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
         if (isThreeTeam) {
-          // THREE-TEAM TRADE
+          // THREE-TEAM TRADE (at least 4 players involved)
           // Pick 3 random teams
           const allTeams = [...new Set(tradeablePlayers.map(p => p.team))];
           if (allTeams.length < 3) continue;
@@ -1248,38 +1248,70 @@
           const team3Name = shuffledTeams[2];
           
           // Get players from each team
-          const team1Players = tradeablePlayers.filter(p => p.team === team1Name);
-          const team2Players = tradeablePlayers.filter(p => p.team === team2Name);
-          const team3Players = tradeablePlayers.filter(p => p.team === team3Name);
+          const team1Players = tradeablePlayers.filter(p => p.team === team1Name).sort(() => Math.random() - 0.5);
+          const team2Players = tradeablePlayers.filter(p => p.team === team2Name).sort(() => Math.random() - 0.5);
+          const team3Players = tradeablePlayers.filter(p => p.team === team3Name).sort(() => Math.random() - 0.5);
           
-          if (team1Players.length === 0 || team2Players.length === 0 || team3Players.length === 0) continue;
+          if (team1Players.length < 2 || team2Players.length < 2 || team3Players.length < 2) continue;
           
-          // Pick random player from each team
-          const player1 = team1Players[Math.floor(Math.random() * team1Players.length)];
-          const player2 = team2Players[Math.floor(Math.random() * team2Players.length)];
-          const player3 = team3Players[Math.floor(Math.random() * team3Players.length)];
-          
-          // Check minimum combined salary
-          if (player1.salary + player2.salary + player3.salary < MIN_COMBINED_SALARY) continue;
-          
-          // Create circular trade: Team1 -> Team2 -> Team3 -> Team1
+          // Create base trade with one player each (circular: T1->T2, T2->T3, T3->T1)
           const testTrade = [
             { 
               teamName: team1Name, 
-              playersOut: [{ ...player1, destination: 1 }], 
-              playersIn: [player3] 
+              playersOut: [], 
+              playersIn: [] 
             },
             { 
               teamName: team2Name, 
-              playersOut: [{ ...player2, destination: 2 }], 
-              playersIn: [player1] 
+              playersOut: [], 
+              playersIn: [] 
             },
             { 
               teamName: team3Name, 
-              playersOut: [{ ...player3, destination: 0 }], 
-              playersIn: [player2] 
+              playersOut: [], 
+              playersIn: [] 
             }
           ];
+          
+          // Randomly distribute 4-6 players across the trade
+          const totalPlayers = 4 + Math.floor(Math.random() * 3); // 4, 5, or 6 players
+          let playersAdded = 0;
+          let teamIndex = 0;
+          
+          // Keep track of which players we've tried to add
+          const usedPlayers = new Set();
+          
+          while (playersAdded < totalPlayers && teamIndex < 30) { // max 30 attempts
+            const currentTeam = teamIndex % 3;
+            const destTeam = (currentTeam + 1) % 3; // circular destination
+            
+            let playerPool;
+            if (currentTeam === 0) playerPool = team1Players;
+            else if (currentTeam === 1) playerPool = team2Players;
+            else playerPool = team3Players;
+            
+            // Find a player we haven't used yet
+            const availablePlayer = playerPool.find(p => !usedPlayers.has(p.player));
+            
+            if (availablePlayer) {
+              usedPlayers.add(availablePlayer.player);
+              testTrade[currentTeam].playersOut.push({ ...availablePlayer, destination: destTeam });
+              testTrade[destTeam].playersIn.push(availablePlayer);
+              playersAdded++;
+            }
+            
+            teamIndex++;
+          }
+          
+          // Make sure we have at least 4 players and each team is involved
+          if (playersAdded < 4) continue;
+          if (testTrade.some(t => t.playersOut.length === 0 && t.playersIn.length === 0)) continue;
+          
+          // Check minimum combined salary
+          const totalSalary = testTrade.reduce((sum, t) => 
+            sum + t.playersOut.reduce((s, p) => s + p.salary, 0), 0
+          );
+          if (totalSalary < MIN_COMBINED_SALARY) continue;
           
           // Validate all three sides
           const team1Valid = validateTeamTrade(testTrade[0]);
