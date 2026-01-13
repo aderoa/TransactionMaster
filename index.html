@@ -624,7 +624,7 @@
       font-weight: 600;
     }
 
-    .ntc-badge, .restriction-badge {
+    .ntc-badge, .restriction-badge, .na-badge, .pp-badge {
       font-size: 0.5625rem;
       padding: 0.125rem 0.3rem;
       border-radius: 3px;
@@ -640,6 +640,16 @@
     .restriction-badge {
       background: var(--red-dim);
       color: var(--red);
+    }
+
+    .na-badge {
+      background: rgba(168, 85, 247, 0.15);
+      color: #a855f7;
+    }
+
+    .pp-badge {
+      background: rgba(236, 72, 153, 0.15);
+      color: #ec4899;
     }
 
     .loading {
@@ -792,15 +802,34 @@
 
     // Get trade exceptions for a team
     function getTeamTPEs(teamName) {
-      return tradeExceptions.filter(tpe => tpe.team === teamName);
+      const tpes = tradeExceptions.filter(tpe => tpe.team === teamName);
+      if (tpes.length > 0) {
+        console.log('TPEs for', teamName, ':', tpes);
+      }
+      return tpes;
     }
 
     // Get trade salary (Two-Way contracts count as $0)
-    function getTradeSalary(player) {
+    // For outgoing: use regular salary
+    // For incoming: use poison pill value if present, otherwise regular salary
+    function getOutgoingSalary(player) {
       if (player.contractStatus && player.contractStatus.toUpperCase().includes('TWO-WAY')) {
         return 0;
       }
       return player.salary;
+    }
+
+    function getIncomingSalary(player) {
+      if (player.contractStatus && player.contractStatus.toUpperCase().includes('TWO-WAY')) {
+        return 0;
+      }
+      // Use poison pill value if present, otherwise regular salary
+      return player.poisonPill > 0 ? player.poisonPill : player.salary;
+    }
+
+    // Legacy function for backwards compatibility
+    function getTradeSalary(player) {
+      return getOutgoingSalary(player);
     }
 
     // Get players for a specific team
@@ -827,8 +856,10 @@
       const teamInfo = getTeamInfo(tradeTeam.teamName);
       if (!teamInfo) return { valid: false, message: 'Team not found' };
 
-      const outgoingSalary = tradeTeam.playersOut.reduce((sum, p) => sum + getTradeSalary(p), 0);
-      const incomingSalary = tradeTeam.playersIn.reduce((sum, p) => sum + getTradeSalary(p), 0);
+      // Outgoing salary uses regular salary
+      const outgoingSalary = tradeTeam.playersOut.reduce((sum, p) => sum + getOutgoingSalary(p), 0);
+      // Incoming salary uses poison pill value if present
+      const incomingSalary = tradeTeam.playersIn.reduce((sum, p) => sum + getIncomingSalary(p), 0);
       
       // Net incoming for hardcap purposes (TPE doesn't help with hardcap - salary still goes on books)
       const netIncomingForHardcap = incomingSalary - outgoingSalary;
@@ -881,6 +912,15 @@
 
       // Check for trade restrictions
       const restrictions = [];
+      
+      // Check for not aggregated players being combined with others
+      const naPlayers = tradeTeam.playersOut.filter(p => p.notAggregated);
+      if (naPlayers.length > 0 && tradeTeam.playersOut.length > 1) {
+        naPlayers.forEach(p => {
+          restrictions.push(`${p.player} cannot be aggregated with other players`);
+        });
+      }
+      
       tradeTeam.playersOut.forEach(p => {
         if (p.tradeAvailable && p.tradeAvailable.toLowerCase() === 'not available') {
           restrictions.push(`${p.player} cannot be traded before deadline`);
@@ -891,6 +931,15 @@
           restrictions.push(`${p.player} has a no-trade clause`);
         }
       });
+
+      // If there are NA violations, trade is invalid
+      if (naPlayers.length > 0 && tradeTeam.playersOut.length > 1) {
+        return {
+          valid: false,
+          message: `${naPlayers.map(p => p.player).join(', ')} cannot be aggregated with other players`,
+          warnings: restrictions
+        };
+      }
 
       return { 
         valid: true, 
@@ -1012,8 +1061,8 @@
         ? validateTeamTrade(tradeTeam) 
         : null;
 
-      const outgoingSalary = tradeTeam.playersOut.reduce((sum, p) => sum + getTradeSalary(p), 0);
-      const incomingSalary = tradeTeam.playersIn.reduce((sum, p) => sum + getTradeSalary(p), 0);
+      const outgoingSalary = tradeTeam.playersOut.reduce((sum, p) => sum + getOutgoingSalary(p), 0);
+      const incomingSalary = tradeTeam.playersIn.reduce((sum, p) => sum + getIncomingSalary(p), 0);
       const netSalary = incomingSalary - outgoingSalary;
 
       const cardClass = validation ? (validation.valid ? 'valid' : 'invalid') : '';
@@ -1058,9 +1107,11 @@
                       <div class="player-chip-name">
                         ${p.player}
                         ${p.noTradeClause ? '<span class="ntc-badge">NTC</span>' : ''}
+                        ${p.notAggregated ? '<span class="na-badge">NA</span>' : ''}
+                        ${p.poisonPill > 0 ? '<span class="pp-badge">PP</span>' : ''}
                         ${p.tradeAvailable ? '<span class="restriction-badge">!</span>' : ''}
                       </div>
-                      <div class="player-chip-salary">${formatSalary(p.salary)}</div>
+                      <div class="player-chip-salary">${formatSalary(p.salary)}${p.poisonPill > 0 ? ` <span style="color: #ec4899; font-size: 0.7em;">→ ${formatSalary(p.poisonPill)}</span>` : ''}</div>
                     </div>
                     <button class="player-chip-remove" data-team="${index}" data-player="${pIndex}">×</button>
                   </div>
@@ -1090,8 +1141,11 @@
                 ${tradeTeam.playersIn.map(p => `
                   <div class="player-chip incoming">
                     <div class="player-chip-info">
-                      <div class="player-chip-name">${p.player}</div>
-                      <div class="player-chip-salary">${formatSalary(p.salary)}</div>
+                      <div class="player-chip-name">
+                        ${p.player}
+                        ${p.poisonPill > 0 ? '<span class="pp-badge">PP</span>' : ''}
+                      </div>
+                      <div class="player-chip-salary">${formatSalary(p.poisonPill > 0 ? p.poisonPill : p.salary)}${p.poisonPill > 0 ? ` <span style="color: #ec4899; font-size: 0.7em;">(was ${formatSalary(p.salary)})</span>` : ''}</div>
                     </div>
                   </div>
                 `).join('')}
@@ -1177,6 +1231,8 @@
                         <span class="player-roster-name">
                           ${p.player}
                           ${p.noTradeClause ? '<span class="ntc-badge">NTC</span>' : ''}
+                          ${p.notAggregated ? '<span class="na-badge">NA</span>' : ''}
+                          ${p.poisonPill > 0 ? '<span class="pp-badge">PP</span>' : ''}
                           ${p.tradeAvailable ? '<span class="restriction-badge">!</span>' : ''}
                         </span>
                         <span class="player-roster-salary">${formatSalary(p.salary)}</span>
@@ -1612,6 +1668,8 @@
                   capSpace: parseSalary(row['CAP SPACE'] || row['Cap Space'] || row['H'] || 0),
                   globalRating: parseFloat(row['RAT 365'] || 0) || 0,
                   noTradeClause: (row['NO TRADE'] || '').toString().trim().toUpperCase() === 'YES',
+                  notAggregated: (row['NOT AGGREGATED'] || '').toString().trim().toUpperCase() === 'NO',
+                  poisonPill: parseSalary(row['POISON PILL'] || 0),
                   apronRoom1st: parseSalary(row['1st APRON'] || 0),
                   apronRoom2nd: parseSalary(row['2nd APRON'] || 0),
                   isHardcap1st: (row['HARD CAP 1st?'] || '').toString().trim().toLowerCase().includes('hc'),
