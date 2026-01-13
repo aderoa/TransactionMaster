@@ -1632,16 +1632,35 @@
             teams = getUniqueTeams();
             
             // Parse Trade Exceptions
+            // Columns: BF = TRADE EXCEPTION (team), BG = DATE, BH = VALUE
             tradeExceptions = results.data
-              .filter(row => row['TRADE EXCEPTION'] && row['TRADE EXCEPTION'].trim() && row['VALUE'])
-              .map(row => ({
-                team: row['TRADE EXCEPTION']?.trim() || '',
-                value: parseSalary(row['VALUE'] || 0),
-                expirationDate: row['DATE']?.trim() || ''
-              }))
+              .filter(row => row['TRADE EXCEPTION'] && row['TRADE EXCEPTION'].trim())
+              .map(row => {
+                // Try to get value - it might be in VALUE or DATE column depending on header
+                let value = parseSalary(row['VALUE'] || 0);
+                let date = row['DATE']?.trim() || '';
+                
+                // If value looks like a date and date looks like money, swap them
+                if (value < 100 && date && date.includes('$')) {
+                  value = parseSalary(date);
+                  date = row['VALUE']?.trim() || '';
+                }
+                
+                return {
+                  team: row['TRADE EXCEPTION']?.trim() || '',
+                  value: value,
+                  expirationDate: date
+                };
+              })
               .filter(tpe => tpe.value > 0);
             
             console.log('Trade Exceptions loaded:', tradeExceptions);
+            if (results.data.length > 0) {
+              const sampleRow = results.data.find(r => r['TRADE EXCEPTION']);
+              if (sampleRow) {
+                console.log('TPE Sample - TRADE EXCEPTION:', sampleRow['TRADE EXCEPTION'], 'DATE:', sampleRow['DATE'], 'VALUE:', sampleRow['VALUE']);
+              }
+            }
             
             // Log CSV headers
             if (results.data.length > 0) {
