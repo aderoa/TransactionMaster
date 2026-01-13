@@ -830,27 +830,29 @@
       const outgoingSalary = tradeTeam.playersOut.reduce((sum, p) => sum + getTradeSalary(p), 0);
       const incomingSalary = tradeTeam.playersIn.reduce((sum, p) => sum + getTradeSalary(p), 0);
       
-      // Net incoming for hardcap purposes (TPE doesn't help with hardcap - salary still goes on books)
-      const netIncomingForHardcap = incomingSalary - outgoingSalary;
-
-      // Check hardcap FIRST - TPE doesn't help here, salary still counts against cap
-      if (teamInfo.isHardcap1st && netIncomingForHardcap > teamInfo.apronRoom1st) {
-        return { 
-          valid: false, 
-          message: `Exceeds 1st apron hardcap by ${formatSalary(netIncomingForHardcap - teamInfo.apronRoom1st)}` 
-        };
-      }
-      if (teamInfo.isHardcap2nd && netIncomingForHardcap > teamInfo.apronRoom2nd) {
-        return { 
-          valid: false, 
-          message: `Exceeds 2nd apron hardcap by ${formatSalary(netIncomingForHardcap - teamInfo.apronRoom2nd)}` 
-        };
-      }
-
-      // Calculate TPE contribution for salary MATCHING purposes only
-      let tpeValue = 0;
+      // Calculate TPE contribution if one is being used
+      let tpeAbsorption = 0;
       if (tradeTeam.tpeUsed) {
-        tpeValue = tradeTeam.tpeUsed.value;
+        // TPE can only absorb salary if team is NOT sending salary out with it
+        // (TPEs cannot be combined with outgoing salary in same transaction for same player)
+        // For simplicity, we'll allow TPE to cover the gap between incoming and what regular rules allow
+        tpeAbsorption = Math.min(tradeTeam.tpeUsed.value, incomingSalary);
+      }
+      
+      const netIncoming = incomingSalary - outgoingSalary - tpeAbsorption;
+
+      // Check hardcap
+      if (teamInfo.isHardcap1st && netIncoming > teamInfo.apronRoom1st) {
+        return { 
+          valid: false, 
+          message: `Exceeds 1st apron hardcap by ${formatSalary(netIncoming - teamInfo.apronRoom1st)}` 
+        };
+      }
+      if (teamInfo.isHardcap2nd && netIncoming > teamInfo.apronRoom2nd) {
+        return { 
+          valid: false, 
+          message: `Exceeds 2nd apron hardcap by ${formatSalary(netIncoming - teamInfo.apronRoom2nd)}` 
+        };
       }
 
       // Check salary matching
@@ -868,8 +870,10 @@
         maxIncoming = outgoingSalary * 1.75 + 250000;
       }
       
-      // Add TPE value to max incoming for salary matching
-      maxIncoming += tpeValue;
+      // Add TPE value to max incoming if being used
+      if (tradeTeam.tpeUsed) {
+        maxIncoming += tradeTeam.tpeUsed.value;
+      }
 
       if (incomingSalary > maxIncoming) {
         const deficit = incomingSalary - maxIncoming;
@@ -1628,35 +1632,16 @@
             teams = getUniqueTeams();
             
             // Parse Trade Exceptions
-            // Columns: BF = TRADE EXCEPTION (team), BG = DATE, BH = VALUE
             tradeExceptions = results.data
-              .filter(row => row['TRADE EXCEPTION'] && row['TRADE EXCEPTION'].trim())
-              .map(row => {
-                // Try to get value - it might be in VALUE or DATE column depending on header
-                let value = parseSalary(row['VALUE'] || 0);
-                let date = row['DATE']?.trim() || '';
-                
-                // If value looks like a date and date looks like money, swap them
-                if (value < 100 && date && date.includes('$')) {
-                  value = parseSalary(date);
-                  date = row['VALUE']?.trim() || '';
-                }
-                
-                return {
-                  team: row['TRADE EXCEPTION']?.trim() || '',
-                  value: value,
-                  expirationDate: date
-                };
-              })
+              .filter(row => row['TRADE EXCEPTION'] && row['TRADE EXCEPTION'].trim() && row['VALUE'])
+              .map(row => ({
+                team: row['TRADE EXCEPTION']?.trim() || '',
+                value: parseSalary(row['VALUE'] || 0),
+                expirationDate: row['DATE']?.trim() || ''
+              }))
               .filter(tpe => tpe.value > 0);
             
             console.log('Trade Exceptions loaded:', tradeExceptions);
-            if (results.data.length > 0) {
-              const sampleRow = results.data.find(r => r['TRADE EXCEPTION']);
-              if (sampleRow) {
-                console.log('TPE Sample - TRADE EXCEPTION:', sampleRow['TRADE EXCEPTION'], 'DATE:', sampleRow['DATE'], 'VALUE:', sampleRow['VALUE']);
-              }
-            }
             
             // Log CSV headers
             if (results.data.length > 0) {
