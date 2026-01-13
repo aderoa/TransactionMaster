@@ -1237,7 +1237,7 @@
       
       for (let attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
         if (isThreeTeam) {
-          // THREE-TEAM TRADE (at least 4 players involved)
+          // THREE-TEAM TRADE (at least 4 players involved, non-circular allowed)
           // Pick 3 random teams
           const allTeams = [...new Set(tradeablePlayers.map(p => p.team))];
           if (allTeams.length < 3) continue;
@@ -1254,7 +1254,7 @@
           
           if (team1Players.length < 2 || team2Players.length < 2 || team3Players.length < 2) continue;
           
-          // Create base trade with one player each (circular: T1->T2, T2->T3, T3->T1)
+          // Create base trade structure
           const testTrade = [
             { 
               teamName: team1Name, 
@@ -1276,36 +1276,39 @@
           // Randomly distribute 4-6 players across the trade
           const totalPlayers = 4 + Math.floor(Math.random() * 3); // 4, 5, or 6 players
           let playersAdded = 0;
-          let teamIndex = 0;
           
-          // Keep track of which players we've tried to add
+          // Keep track of which players we've used
           const usedPlayers = new Set();
+          const playerPools = [team1Players, team2Players, team3Players];
           
-          while (playersAdded < totalPlayers && teamIndex < 30) { // max 30 attempts
-            const currentTeam = teamIndex % 3;
-            const destTeam = (currentTeam + 1) % 3; // circular destination
+          // Add players randomly, with random destinations (not their own team)
+          let attempts = 0;
+          while (playersAdded < totalPlayers && attempts < 50) {
+            attempts++;
             
-            let playerPool;
-            if (currentTeam === 0) playerPool = team1Players;
-            else if (currentTeam === 1) playerPool = team2Players;
-            else playerPool = team3Players;
+            // Pick a random team to send from
+            const fromTeam = Math.floor(Math.random() * 3);
+            const pool = playerPools[fromTeam];
             
             // Find a player we haven't used yet
-            const availablePlayer = playerPool.find(p => !usedPlayers.has(p.player));
+            const availablePlayer = pool.find(p => !usedPlayers.has(p.player));
+            if (!availablePlayer) continue;
             
-            if (availablePlayer) {
-              usedPlayers.add(availablePlayer.player);
-              testTrade[currentTeam].playersOut.push({ ...availablePlayer, destination: destTeam });
-              testTrade[destTeam].playersIn.push(availablePlayer);
-              playersAdded++;
-            }
+            // Pick a random destination (not the same team)
+            const possibleDests = [0, 1, 2].filter(t => t !== fromTeam);
+            const destTeam = possibleDests[Math.floor(Math.random() * possibleDests.length)];
             
-            teamIndex++;
+            usedPlayers.add(availablePlayer.player);
+            testTrade[fromTeam].playersOut.push({ ...availablePlayer, destination: destTeam });
+            testTrade[destTeam].playersIn.push(availablePlayer);
+            playersAdded++;
           }
           
-          // Make sure we have at least 4 players and each team is involved
+          // Make sure we have at least 4 players
           if (playersAdded < 4) continue;
-          if (testTrade.some(t => t.playersOut.length === 0 && t.playersIn.length === 0)) continue;
+          
+          // Make sure each team is sending at least one player (true 3-team trade)
+          if (testTrade.some(t => t.playersOut.length === 0)) continue;
           
           // Check minimum combined salary
           const totalSalary = testTrade.reduce((sum, t) => 
